@@ -1,221 +1,171 @@
 <script lang="ts">
   import Button from '$lib/components/ui/Button.svelte';
-  import Input from '$lib/components/ui/Input.svelte';
   import Card from '$lib/components/ui/Card.svelte';
   import Alert from '$lib/components/ui/Alert.svelte';
+  import { onMount } from 'svelte';
 
-  let inputValue = '';
-  let loading = false;
+  let recentEntries = $state([]);
+  let todayHours = $state(0);
+  let weekHours = $state(0);
+  let loading = $state(false);
 
-  function handleSubmit() {
+  onMount(async () => {
+    // Load recent time entries and statistics
+    await loadDashboardData();
+  });
+
+  async function loadDashboardData() {
     loading = true;
-    setTimeout(() => {
+    try {
+      // TODO: Replace with actual API calls
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      recentEntries = [
+        { id: 1, workOrder: 'WO-12345', startTime: '09:00', endTime: '12:00', duration: 3 },
+        { id: 2, workOrder: 'WO-12346', startTime: '13:00', endTime: '17:00', duration: 4 },
+      ];
+
+      todayHours = 7;
+      weekHours = 35;
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+    } finally {
       loading = false;
-    }, 2000);
+    }
   }
 </script>
 
 <svelte:head>
-  <title>Time Booking App - Design System Demo</title>
-  <meta name="description" content="Task Time Booking Application Design System" />
+  <title>Dashboard - Time Booking App</title>
+  <meta name="description" content="Time booking dashboard with quick actions and recent entries" />
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">
-        Time Booking App
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        Dashboard
       </h1>
-      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-        A comprehensive design system for the task time booking application,
-        built with accessibility and mobile-first principles.
+      <p class="text-gray-600">
+        Track your time entries and manage work orders efficiently.
       </p>
     </div>
 
-    <!-- Design System Demo -->
-    <div class="space-y-12">
-
-      <!-- Colors Section -->
-      <section>
-        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Color Palette</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card padding="small">
-            <div class="w-full h-16 bg-primary-500 rounded-lg mb-3"></div>
-            <h3 class="font-medium text-gray-900">Primary</h3>
-            <p class="text-sm text-gray-500">#2563eb</p>
-          </Card>
-
-          <Card padding="small">
-            <div class="w-full h-16 bg-success-500 rounded-lg mb-3"></div>
-            <h3 class="font-medium text-gray-900">Success</h3>
-            <p class="text-sm text-gray-500">#059669</p>
-          </Card>
-
-          <Card padding="small">
-            <div class="w-full h-16 bg-warning-500 rounded-lg mb-3"></div>
-            <h3 class="font-medium text-gray-900">Warning</h3>
-            <p class="text-sm text-gray-500">#d97706</p>
-          </Card>
-
-          <Card padding="small">
-            <div class="w-full h-16 bg-error-500 rounded-lg mb-3"></div>
-            <h3 class="font-medium text-gray-900">Error</h3>
-            <p class="text-sm text-gray-500">#dc2626</p>
-          </Card>
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <Card hover clickable>
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">📱</span>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Scan Barcode</h3>
+          <p class="text-gray-600 mb-4">Quickly scan work order barcodes to start time tracking</p>
+          <Button variant="primary" fullWidth>
+            <a href="/scan" class="block">Start Scanning</a>
+          </Button>
         </div>
-      </section>
+      </Card>
 
-      <!-- Typography Section -->
-      <section>
-        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Typography</h2>
-        <Card>
-          <div class="space-y-4">
-            <div>
-              <h1 class="text-4xl font-bold text-gray-900">Heading 1</h1>
-              <p class="text-sm text-gray-500 mt-1">text-4xl font-bold</p>
-            </div>
-            <div>
-              <h2 class="text-3xl font-semibold text-gray-900">Heading 2</h2>
-              <p class="text-sm text-gray-500 mt-1">text-3xl font-semibold</p>
-            </div>
-            <div>
-              <h3 class="text-2xl font-semibold text-gray-900">Heading 3</h3>
-              <p class="text-sm text-gray-500 mt-1">text-2xl font-semibold</p>
-            </div>
-            <div>
-              <p class="text-lg text-gray-900">Large body text for important content</p>
-              <p class="text-sm text-gray-500 mt-1">text-lg</p>
-            </div>
-            <div>
-              <p class="text-base text-gray-900">Regular body text for most content</p>
-              <p class="text-sm text-gray-500 mt-1">text-base</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-600">Small text for captions and metadata</p>
-              <p class="text-sm text-gray-500 mt-1">text-sm</p>
-            </div>
+      <Card hover clickable>
+        <div class="text-center">
+          <div class="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">⏱️</span>
           </div>
-        </Card>
-      </section>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Manual Entry</h3>
+          <p class="text-gray-600 mb-4">Enter time manually for work orders without barcodes</p>
+          <Button variant="secondary" fullWidth>
+            Manual Entry
+          </Button>
+        </div>
+      </Card>
 
-      <!-- Buttons Section -->
-      <section>
-        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Buttons</h2>
-        <Card>
-          <div class="space-y-6">
-            <!-- Button Variants -->
-            <div>
-              <h3 class="text-lg font-medium text-gray-900 mb-4">Variants</h3>
-              <div class="flex flex-wrap gap-4">
-                <Button variant="primary">Primary Button</Button>
-                <Button variant="secondary">Secondary Button</Button>
-                <Button variant="danger">Danger Button</Button>
-                <Button variant="ghost">Ghost Button</Button>
-              </div>
-            </div>
-
-            <!-- Button Sizes -->
-            <div>
-              <h3 class="text-lg font-medium text-gray-900 mb-4">Sizes</h3>
-              <div class="flex flex-wrap items-center gap-4">
-                <Button size="small">Small</Button>
-                <Button size="medium">Medium</Button>
-                <Button size="large">Large</Button>
-              </div>
-            </div>
-
-            <!-- Button States -->
-            <div>
-              <h3 class="text-lg font-medium text-gray-900 mb-4">States</h3>
-              <div class="flex flex-wrap gap-4">
-                <Button>Normal</Button>
-                <Button disabled>Disabled</Button>
-                <Button loading={loading} on:click={handleSubmit}>
-                  {loading ? 'Loading...' : 'Click to Load'}
-                </Button>
-              </div>
-            </div>
+      <Card hover clickable>
+        <div class="text-center">
+          <div class="w-12 h-12 bg-info-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">📊</span>
           </div>
-        </Card>
-      </section>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">View History</h3>
+          <p class="text-gray-600 mb-4">Review and manage your previous time entries</p>
+          <Button variant="ghost" fullWidth>
+            <a href="/history" class="block">View History</a>
+          </Button>
+        </div>
+      </Card>
+    </div>
 
-      <!-- Forms Section -->
-      <section>
-        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Form Elements</h2>
-        <Card>
-          <div class="space-y-6 max-w-md">
-            <Input
-              label="Work Order Number"
-              placeholder="Enter work order number"
-              bind:value={inputValue}
-              required
-            />
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <Card>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-primary-600 mb-2">{todayHours}h</div>
+          <div class="text-sm text-gray-600">Today</div>
+        </div>
+      </Card>
 
-            <Input
-              label="Start Time"
-              type="time"
-              help="Select the time you started working"
-            />
+      <Card>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-success-600 mb-2">{weekHours}h</div>
+          <div class="text-sm text-gray-600">This Week</div>
+        </div>
+      </Card>
 
-            <Input
-              label="Error Example"
-              placeholder="This field has an error"
-              error="This field is required"
-            />
+      <Card>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-info-600 mb-2">{recentEntries.length}</div>
+          <div class="text-sm text-gray-600">Recent Entries</div>
+        </div>
+      </Card>
+    </div>
 
-            <Input
-              label="Disabled Field"
-              placeholder="This field is disabled"
-              disabled
-            />
+    <!-- Recent Entries -->
+    <Card>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-900">Recent Time Entries</h2>
+        <Button variant="ghost" size="small">
+          <a href="/history">View All</a>
+        </Button>
+      </div>
+
+      {#if loading}
+        <div class="text-center py-8">
+          <div class="spinner w-8 h-8 mx-auto mb-4"></div>
+          <p class="text-gray-600">Loading recent entries...</p>
+        </div>
+      {:else if recentEntries.length === 0}
+        <div class="text-center py-8">
+          <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl text-gray-400">📝</span>
           </div>
-        </Card>
-      </section>
-
-      <!-- Alerts Section -->
-      <section>
-        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Alerts</h2>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No entries yet</h3>
+          <p class="text-gray-600 mb-4">Start by scanning a barcode or creating a manual entry</p>
+          <Button variant="primary">
+            <a href="/scan">Scan First Barcode</a>
+          </Button>
+        </div>
+      {:else}
         <div class="space-y-4">
-          <Alert variant="success" title="Success!" dismissible>
-            Your time entry has been successfully submitted.
-          </Alert>
-
-          <Alert variant="warning" title="Warning">
-            Please check your internet connection before submitting.
-          </Alert>
-
-          <Alert variant="error" title="Error">
-            Failed to submit time entry. Please try again.
-          </Alert>
-
-          <Alert variant="info">
-            Tip: You can scan barcodes by tapping the camera icon.
-          </Alert>
+          {#each recentEntries as entry}
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <div class="font-medium text-gray-900">{entry.workOrder}</div>
+                <div class="text-sm text-gray-600">
+                  {entry.startTime} - {entry.endTime} ({entry.duration}h)
+                </div>
+              </div>
+              <Button variant="ghost" size="small">Edit</Button>
+            </div>
+          {/each}
         </div>
-      </section>
+      {/if}
+    </Card>
 
-      <!-- Cards Section -->
-      <section>
-        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Cards</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card hover>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Default Card</h3>
-            <p class="text-gray-600">This is a standard card with hover effect.</p>
-          </Card>
-
-          <Card shadow="medium" border={false}>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Medium Shadow</h3>
-            <p class="text-gray-600">Card with medium shadow and no border.</p>
-          </Card>
-
-          <Card padding="large" shadow="strong">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Large Padding</h3>
-            <p class="text-gray-600">Card with large padding and strong shadow.</p>
-          </Card>
-        </div>
-      </section>
-
+    <!-- Quick Tips -->
+    <div class="mt-8">
+      <Alert variant="info">
+        <strong>Pro Tip:</strong> Use the barcode scanner for fastest time entry.
+        The app works offline and will sync when you're back online.
+      </Alert>
     </div>
   </div>
 </div>

@@ -1,49 +1,49 @@
 <script lang="ts">
   import type { HTMLButtonAttributes } from 'svelte/elements';
-  
-  interface $$Props extends HTMLButtonAttributes {
+
+  interface Props extends HTMLButtonAttributes {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
     size?: 'small' | 'medium' | 'large';
     loading?: boolean;
     icon?: boolean;
     fullWidth?: boolean;
+    children?: any;
   }
-  
-  export let variant: $$Props['variant'] = 'primary';
-  export let size: $$Props['size'] = 'medium';
-  export let loading: $$Props['loading'] = false;
-  export let icon: $$Props['icon'] = false;
-  export let fullWidth: $$Props['fullWidth'] = false;
-  export let disabled: $$Props['disabled'] = false;
-  export let type: $$Props['type'] = 'button';
-  
-  $: buttonClass = [
+
+  let {
+    variant = 'primary',
+    size = 'medium',
+    loading = false,
+    icon = false,
+    fullWidth = false,
+    disabled = false,
+    type = 'button',
+    children,
+    ...restProps
+  }: Props = $props();
+
+  let buttonClass = $derived([
     'btn',
     `btn-${variant}`,
     size === 'small' ? 'btn-small' : size === 'large' ? 'btn-large' : '',
     icon ? 'btn-icon' : '',
     fullWidth ? 'w-full' : '',
     loading ? 'cursor-wait' : '',
-  ].filter(Boolean).join(' ');
+  ].filter(Boolean).join(' '));
 </script>
 
 <button
   {type}
   class={buttonClass}
   disabled={disabled || loading}
-  on:click
-  on:focus
-  on:blur
-  on:mouseenter
-  on:mouseleave
-  {...$$restProps}
+  {...restProps}
 >
   {#if loading}
     <div class="spinner w-4 h-4 mr-2" aria-hidden="true"></div>
     <span class="sr-only">Loading...</span>
   {/if}
-  
-  <slot />
+
+  {@render children?.()}
 </button>
 
 <style>

@@ -1,33 +1,36 @@
 <script lang="ts">
   import type { HTMLInputAttributes } from 'svelte/elements';
-  
-  interface $$Props extends HTMLInputAttributes {
+
+  interface Props extends HTMLInputAttributes {
     label?: string;
     error?: string;
     help?: string;
     required?: boolean;
     fullWidth?: boolean;
   }
-  
-  export let label: $$Props['label'] = '';
-  export let error: $$Props['error'] = '';
-  export let help: $$Props['help'] = '';
-  export let required: $$Props['required'] = false;
-  export let fullWidth: $$Props['fullWidth'] = true;
-  export let value: $$Props['value'] = '';
-  export let type: $$Props['type'] = 'text';
-  export let id: $$Props['id'] = '';
-  export let placeholder: $$Props['placeholder'] = '';
-  export let disabled: $$Props['disabled'] = false;
-  
+
+  let {
+    label = '',
+    error = '',
+    help = '',
+    required = false,
+    fullWidth = true,
+    value = $bindable(''),
+    type = 'text',
+    id = '',
+    placeholder = '',
+    disabled = false,
+    ...restProps
+  }: Props = $props();
+
   // Generate unique ID if not provided
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
-  
-  $: inputClass = [
+
+  let inputClass = $derived([
     'form-input',
     error ? 'form-input-error' : '',
     fullWidth ? 'w-full' : '',
-  ].filter(Boolean).join(' ');
+  ].filter(Boolean).join(' '));
 </script>
 
 <div class={fullWidth ? 'w-full' : ''}>
@@ -50,13 +53,7 @@
     {required}
     aria-invalid={error ? 'true' : 'false'}
     aria-describedby={error ? `${inputId}-error` : help ? `${inputId}-help` : undefined}
-    on:input
-    on:change
-    on:focus
-    on:blur
-    on:keydown
-    on:keyup
-    {...$$restProps}
+    {...restProps}
   />
   
   {#if error}

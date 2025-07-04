@@ -1,29 +1,33 @@
 <script lang="ts">
-  interface $$Props {
+  interface Props {
     variant?: 'success' | 'warning' | 'error' | 'info';
     dismissible?: boolean;
     title?: string;
+    children?: any;
   }
-  
-  export let variant: $$Props['variant'] = 'info';
-  export let dismissible: $$Props['dismissible'] = false;
-  export let title: $$Props['title'] = '';
-  
-  let visible = true;
-  
+
+  let {
+    variant = 'info',
+    dismissible = false,
+    title = '',
+    children
+  }: Props = $props();
+
+  let visible = $state(true);
+
   const icons = {
     success: '✓',
     warning: '⚠',
     error: '✕',
     info: 'ℹ'
   };
-  
-  $: alertClass = [
+
+  let alertClass = $derived([
     'alert',
     `alert-${variant}`,
     'flex items-start space-x-3'
-  ].join(' ');
-  
+  ].join(' '));
+
   function dismiss() {
     visible = false;
   }
@@ -40,7 +44,7 @@
         <h4 class="font-medium mb-1">{title}</h4>
       {/if}
       <div class="text-sm">
-        <slot />
+        {@render children?.()}
       </div>
     </div>
     
