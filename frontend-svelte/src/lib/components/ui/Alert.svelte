@@ -52,7 +52,7 @@
       <button
         type="button"
         class="flex-shrink-0 p-1 rounded-md hover:bg-black hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current"
-        on:click={dismiss}
+        onclick={dismiss}
         aria-label="Dismiss alert"
       >
         <span class="text-lg" aria-hidden="true">✕</span>

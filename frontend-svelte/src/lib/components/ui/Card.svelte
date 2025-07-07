@@ -5,6 +5,7 @@
     border?: boolean;
     hover?: boolean;
     clickable?: boolean;
+    class?: string;
     children?: any;
   }
 
@@ -14,6 +15,7 @@
     border = true,
     hover = false,
     clickable = false,
+    class: className = '',
     children,
     ...restProps
   }: Props = $props();
@@ -29,6 +31,7 @@
     border ? 'border border-gray-200' : 'border-0',
     hover ? 'hover:shadow-medium transition-shadow duration-200' : '',
     clickable ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2' : '',
+    className
   ].filter(Boolean).join(' '));
 </script>
 

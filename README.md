@@ -1,6 +1,6 @@
 # Timebooking Helper
 
-A complete Flutter web application with Node.js backend for creating timebooking XML files. The app is mobile-friendly and designed to run in web browsers, especially on mobile devices.
+A complete SvelteKit web application with Node.js backend for creating timebooking XML files. The app is mobile-friendly and designed to run in web browsers, especially on mobile devices.
 
 ## 🏗️ Architecture
 
@@ -14,13 +14,13 @@ A complete Flutter web application with Node.js backend for creating timebooking
   - Rate limiting and security headers
   - Docker containerization support
 
-### Frontend (Flutter Web)
-- **Location**: `./frontend/`
-- **Port**: 8080
+### Frontend (SvelteKit + TypeScript)
+- **Location**: `./frontend-svelte/`
+- **Port**: 5173
 - **Features**:
-  - Mobile-friendly responsive design
+  - Mobile-friendly responsive design with Tailwind CSS
   - Touch-optimized form controls
-  - **Camera barcode scanning** (mobile devices)
+  - **Camera barcode scanning** with html5-qrcode library
   - **Manual barcode entry** (desktop/fallback)
   - **Device capability detection**
   - Date/time pickers
@@ -31,7 +31,7 @@ A complete Flutter web application with Node.js backend for creating timebooking
 
 ### Prerequisites
 - Node.js (v18 or higher)
-- Flutter SDK (v3.32.5 or higher)
+- npm or yarn package manager
 - Docker (optional, for containerized deployment)
 
 ### 1. Start the Backend
@@ -44,37 +44,42 @@ Backend will be available at: http://localhost:3000
 
 ### 2. Start the Frontend
 ```bash
-cd frontend
-flutter pub get
-flutter run -d web-server --web-port 8080
+cd frontend-svelte
+npm install
+npm run dev
 ```
-Frontend will be available at: http://localhost:8080
+Frontend will be available at: http://localhost:5173
 
 ### 3. Test the Application
 ```bash
-# Run integration tests
-powershell -ExecutionPolicy Bypass -File simple-test.ps1
+# Test backend health
+curl http://localhost:3000/health
+
+# Test frontend
+curl http://localhost:5173
 ```
 
 ## 📱 Usage
 
-1. **Open the app**: Navigate to http://localhost:8080 in your mobile browser
-2. **Fill the form**:
-   - **User Sign**: Your user identifier (e.g., "2352191")
-   - **Barcode**:
-     - **Mobile devices**: Tap "Scan" button to use camera for barcode scanning
-     - **Desktop**: Manual entry (e.g., "WO4320474")
-     - **Fallback**: Manual entry if camera is not available
-   - **Entry Start**: Tap to select start date and time
-   - **Entry End**: Tap to select end date and time
-3. **Submit**: Tap "Submit Booking" to generate the XML file
-4. **View Results**: Check the response message for confirmation
+1. **Open the app**: Navigate to http://localhost:5173 in your mobile browser
+2. **Dashboard**: View quick actions and recent time entries
+3. **Scan Barcode**:
+   - **Mobile devices**: Tap "Start Scanning" to use camera for barcode scanning
+   - **Desktop**: Manual entry available as fallback
+   - **HTTPS Required**: Camera access requires HTTPS or localhost
+4. **Time Entry**:
+   - **Work Order**: Scanned automatically or entered manually
+   - **Start Time**: Current time used by default
+   - **End Time**: Optional, leave empty for ongoing work
+5. **Submit**: Tap "Submit Time Entry" to generate the XML file
+6. **History**: View and manage previous time entries
 
 ### 📷 Barcode Scanning Features
-- **Automatic Detection**: App detects device capabilities and shows appropriate input method
-- **Camera Scanning**: Full-screen camera interface with scanning overlay
-- **Manual Fallback**: Always available for desktop or when camera access is denied
-- **Device Info**: Shows current device type and available features
+- **html5-qrcode Library**: Cross-platform barcode scanning
+- **Multiple Formats**: QR codes, Code 128, EAN, UPC, and more
+- **Mobile Optimized**: Back camera preference, touch-friendly interface
+- **Manual Fallback**: Always available when camera access is denied
+- **Permission Handling**: Graceful camera permission management
 
 ## 📋 API Endpoints
 
@@ -176,19 +181,24 @@ curl -X POST http://localhost:3000/api/booking \
 
 ```
 timebooking-helper/
-├── backend/                 # Node.js backend
-│   ├── server.js           # Main server file
-│   ├── package.json        # Dependencies
-│   ├── Dockerfile          # Docker configuration
-│   ├── test/               # Test files
-│   └── xml_output/         # Generated XML files
-├── frontend/               # Flutter web app
-│   ├── lib/main.dart       # Main Flutter app
-│   ├── pubspec.yaml        # Flutter dependencies
-│   └── web/                # Web assets
-├── docker-compose.yml      # Docker Compose configuration
-├── simple-test.ps1         # Integration test script
-└── README.md              # This file
+├── backend/                    # Node.js backend
+│   ├── server.js              # Main server file
+│   ├── package.json           # Dependencies
+│   ├── Dockerfile             # Docker configuration
+│   ├── test/                  # Test files
+│   └── xml_output/            # Generated XML files
+├── frontend-svelte/           # SvelteKit frontend
+│   ├── src/                   # Source code
+│   │   ├── routes/            # SvelteKit routes
+│   │   ├── lib/               # Components and utilities
+│   │   └── app.html           # HTML template
+│   ├── package.json           # Dependencies
+│   ├── vite.config.ts         # Vite configuration
+│   ├── svelte.config.js       # Svelte configuration
+│   └── tailwind.config.js     # Tailwind CSS configuration
+├── docker-compose.yml         # Docker Compose configuration
+├── setup-ngrok.ps1           # HTTPS tunnel setup for mobile testing
+└── README.md                 # This file
 ```
 
 ## 🔧 Configuration
@@ -199,8 +209,9 @@ timebooking-helper/
 - **Entity Code**: Fixed value "330R" (as specified)
 
 ### Frontend Configuration
-- **Backend URL**: Update `backendUrl` in `frontend/lib/main.dart` if needed
-- **Port**: Configurable via Flutter run command
+- **Backend URL**: Configure in SvelteKit API routes or environment variables
+- **Port**: Set in `vite.config.ts` (default: 5173)
+- **HTTPS**: Required for camera access on mobile devices
 
 ## 🛡️ Security Features
 
@@ -212,28 +223,35 @@ timebooking-helper/
 
 ## 📱 Mobile Optimization
 
-- Responsive design for mobile screens
-- Touch-friendly form controls
-- **Camera barcode scanning with mobile_scanner**
+- Responsive design with Tailwind CSS
+- Touch-friendly form controls (minimum 44px touch targets)
+- **Camera barcode scanning with html5-qrcode**
 - **Permission handling for camera access**
-- Native date/time pickers
-- Optimized button sizes for touch
+- Mobile-optimized date/time inputs
+- Optimized button sizes for touch interaction
 - Device capability detection and adaptive UI
-- Smooth scrolling and navigation
+- Progressive Web App (PWA) capabilities
 
 ## 🚨 Troubleshooting
 
 ### Common Issues
 
-1. **Backend not starting**: Check if port 3000 is available
-2. **Frontend build errors**: Run `flutter clean && flutter pub get`
-3. **CORS errors**: Ensure backend is running and accessible
-4. **XML files not generated**: Check backend logs and file permissions
+1. **Backend not starting**: Check if port 3000 is available (`netstat -ano | findstr :3000`)
+2. **Frontend build errors**: Run `npm install` in frontend-svelte directory
+3. **TypeScript errors**: Run `npm run check` to see detailed errors
+4. **Camera not working**: Ensure HTTPS or localhost, check browser permissions
+5. **CORS errors**: Ensure backend is running and accessible
+6. **XML files not generated**: Check backend logs and file permissions
 
 ### Logs
 - **Backend logs**: Check terminal where `npm start` was run
-- **Frontend logs**: Check browser developer console
+- **Frontend logs**: Check browser developer console and Vite dev server output
 - **Docker logs**: `docker-compose logs timebooking-backend`
+
+### Mobile Testing
+- **HTTPS Required**: Use ngrok or setup-https.ps1 for mobile camera access
+- **Permission Denied**: Check browser settings for camera permissions
+- **Scanner Not Working**: Try manual entry as fallback
 
 ## 📞 Support
 

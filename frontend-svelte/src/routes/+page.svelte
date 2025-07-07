@@ -4,15 +4,59 @@
   import Alert from '$lib/components/ui/Alert.svelte';
   import { onMount } from 'svelte';
 
-  let recentEntries = $state([]);
+  interface TimeEntry {
+    id: number;
+    workOrder: string;
+    startTime: string;
+    endTime: string;
+    duration: number;
+  }
+
+  let recentEntries = $state<TimeEntry[]>([]);
   let todayHours = $state(0);
   let weekHours = $state(0);
   let loading = $state(false);
 
   onMount(async () => {
-    // Load recent time entries and statistics
-    await loadDashboardData();
+    // Start camera permission request immediately as the highest priority
+    const permissionPromise = preRequestCameraPermission();
+
+    // Load dashboard data in parallel (don't wait for permission)
+    const dashboardPromise = loadDashboardData();
+
+    // Wait for both to complete (permission request gets maximum time)
+    await Promise.all([permissionPromise, dashboardPromise]);
   });
+
+  async function preRequestCameraPermission() {
+    try {
+      // Only request permission if we're in a browser environment
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
+        console.log('🚀 PRIORITY: Pre-requesting camera permission immediately...');
+
+        // Request camera permission with optimal settings for speed
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'environment', // Back camera for barcode scanning
+            width: { ideal: 640 },     // Lower resolution for faster initialization
+            height: { ideal: 480 }
+          }
+        });
+
+        // Store permission state immediately
+        localStorage.setItem('cameraPermissionGranted', 'true');
+        localStorage.setItem('cameraPermissionTime', Date.now().toString());
+
+        // Stop the stream immediately - we just wanted permission
+        stream.getTracks().forEach(track => track.stop());
+
+        console.log('✅ Camera permission granted and cached!');
+      }
+    } catch (error) {
+      console.log('❌ Camera permission denied or unavailable:', error instanceof Error ? error.message : error);
+      localStorage.setItem('cameraPermissionGranted', 'false');
+    }
+  }
 
   async function loadDashboardData() {
     loading = true;

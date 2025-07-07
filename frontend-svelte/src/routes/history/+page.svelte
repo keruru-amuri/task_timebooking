@@ -113,9 +113,9 @@
 
       if (response.ok) {
         // Update local state
-        const index = timeEntries.findIndex(e => e.id === editingEntry.id);
+        const index = timeEntries.findIndex(e => e.id === editingEntry!.id);
         if (index !== -1) {
-          timeEntries[index] = { ...editingEntry };
+          timeEntries[index] = { ...editingEntry! };
         }
         editingEntry = null;
       } else {
@@ -145,14 +145,14 @@
     }
   }
 
-  $: filteredEntries = timeEntries.filter(entry => {
+  let filteredEntries = $derived(timeEntries.filter(entry => {
     const matchesDate = !filterDate || entry.date === filterDate;
-    const matchesWorkOrder = !filterWorkOrder || 
+    const matchesWorkOrder = !filterWorkOrder ||
       entry.workOrderNumber.toLowerCase().includes(filterWorkOrder.toLowerCase());
     return matchesDate && matchesWorkOrder;
-  });
+  }));
 
-  $: totalHours = filteredEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
+  let totalHours = $derived(filteredEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0));
 </script>
 
 <svelte:head>
@@ -260,8 +260,8 @@
                 </div>
                 
                 <div class="flex space-x-4">
-                  <Button variant="primary" on:click={saveEntry}>Save</Button>
-                  <Button variant="secondary" on:click={cancelEdit}>Cancel</Button>
+                  <Button variant="primary" onclick={saveEntry}>Save</Button>
+                  <Button variant="secondary" onclick={cancelEdit}>Cancel</Button>
                 </div>
               </div>
             {:else}
@@ -292,10 +292,10 @@
                 </div>
                 
                 <div class="flex space-x-2">
-                  <Button variant="ghost" size="small" on:click={() => editEntry(entry)}>
+                  <Button variant="ghost" size="small" onclick={() => editEntry(entry)}>
                     Edit
                   </Button>
-                  <Button variant="danger" size="small" on:click={() => deleteEntry(entry.id)}>
+                  <Button variant="danger" size="small" onclick={() => deleteEntry(entry.id)}>
                     Delete
                   </Button>
                 </div>

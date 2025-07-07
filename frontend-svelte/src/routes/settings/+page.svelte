@@ -216,7 +216,7 @@
             />
             
             <div class="flex space-x-4">
-              <Button variant="secondary" on:click={testConnection}>
+              <Button variant="secondary" onclick={testConnection}>
                 Test Connection
               </Button>
             </div>
@@ -320,7 +320,7 @@
           <h2 class="text-xl font-semibold text-gray-900 mb-6">Data Management</h2>
           <div class="space-y-4">
             <div class="flex flex-wrap gap-4">
-              <Button variant="secondary" on:click={exportData}>
+              <Button variant="secondary" onclick={exportData}>
                 Export Settings
               </Button>
               
@@ -330,11 +330,11 @@
                   type="file"
                   accept=".json"
                   class="hidden"
-                  on:change={importData}
+                  onchange={importData}
                 />
               </label>
               
-              <Button variant="danger" on:click={resetSettings}>
+              <Button variant="danger" onclick={resetSettings}>
                 Reset to Defaults
               </Button>
             </div>
@@ -346,7 +346,7 @@
           <Button
             variant="primary"
             loading={saving}
-            on:click={saveSettings}
+            onclick={saveSettings}
           >
             {saving ? 'Saving...' : 'Save Settings'}
           </Button>
